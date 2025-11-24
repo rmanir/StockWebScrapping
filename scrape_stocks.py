@@ -132,8 +132,8 @@ def load_cookies(context):
 
 def perform_login(page):
     """Auto login using Screener credentials from environment variables."""
-    email = "tourspht@gmail.com" #os.getenv("SCREENER_EMAIL")
-    password = "Kncet@123" #os.getenv("SCREENER_PASSWORD")
+    email = os.getenv("SCREENER_EMAIL")
+    password = os.getenv("SCREENER_PASSWORD")
 
     if not email or not password:
         raise RuntimeError("SCREENER_EMAIL or SCREENER_PASSWORD environment variables are not set.")
@@ -205,7 +205,7 @@ def main():
 
     with sync_playwright() as p:
         # For GitHub Actions and automation, use headless=True
-        browser = p.chromium.launch(headless=False, slow_mo=300)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context()
         page = context.new_page()
 
