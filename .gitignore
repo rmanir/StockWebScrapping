@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+
+# Local credentials & cookies
+service-account.json
+cookies.json
+
+# Local data files
+*.xlsx
+*.csv
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
