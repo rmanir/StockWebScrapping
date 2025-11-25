@@ -194,13 +194,14 @@ def scrape_with_retry(page, search_text, retry=3):
             page.goto("https://www.screener.in/", timeout=60000)
 
             # Wait for search bar to be ready
-            page.wait_for_selector('#desktop-search input', timeout=15000)
+            page.wait_for_selector('#desktop-search input', timeout=10000)
 
             # Extra small delay to allow JS to settle the autocomplete
             time.sleep(1)
 
             # Fill the search box
             page.fill('#desktop-search input', search_text)
+            time.sleep(2)
 
             # Press enter
             page.keyboard.press("Enter")
@@ -240,7 +241,11 @@ def main():
     with sync_playwright() as p:
         # For GitHub Actions and automation, use headless=True
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context()
+        context = browser.new_context(
+                  record_video_dir="videos/",
+                  record_video_size={"width": 1280, "height": 720},
+        )
+
         page = context.new_page()
 
         # Try local cookies (only useful if you run locally)
@@ -279,6 +284,7 @@ def main():
                 time.sleep(DELAY_BETWEEN_STOCKS)
 
         finally:
+            context.close()
             browser.close()
 
     # Write updated DataFrame back to the weekly sheet
