@@ -171,21 +171,55 @@ def get_metric_value(page, locator: str):
         return None
     return None
 
-def scrape_with_retry(page, search_text: str, retry: int = 3):
+# def scrape_with_retry(page, search_text: str, retry: int = 3):
+#     for attempt in range(1, retry + 1):
+#         try:
+#             page.goto("https://www.screener.in/", timeout=60000)
+#             page.fill('#desktop-search input', search_text)
+#             page.keyboard.press("Enter")
+#             page.wait_for_selector('//*[@id="top"]/div[1]/div/h1', timeout=60000)
+#             print(f"✔ Loaded page for {search_text} (Attempt {attempt})")
+#             return True
+#         except Exception as e:
+#             print(f"⚠ Attempt {attempt} failed for {search_text}: {e}")
+#             if attempt < retry:
+#                 time.sleep(2)
+#     print(f"❌ Failed to load page for {search_text} after {retry} attempts.")
+#     return False
+
+def scrape_with_retry(page, search_text, retry=3):
     for attempt in range(1, retry + 1):
         try:
+            # Go to screener homepage
             page.goto("https://www.screener.in/", timeout=60000)
+
+            # Wait for search bar to be ready
+            page.wait_for_selector('#desktop-search input', timeout=15000)
+
+            # Extra small delay to allow JS to settle the autocomplete
+            time.sleep(1)
+
+            # Fill the search box
             page.fill('#desktop-search input', search_text)
+
+            # Press enter
             page.keyboard.press("Enter")
-            page.wait_for_selector('//*[@id="top"]/div[1]/div/h1', timeout=60000)
-            print(f"✔ Loaded page for {search_text} (Attempt {attempt})")
+
+            # Wait for the company title/header to appear (more stable selector)
+            page.wait_for_selector("h1", timeout=30000)
+
+            print(f"✔ Loaded page successfully for {search_text} (Attempt {attempt})")
             return True
+
         except Exception as e:
             print(f"⚠ Attempt {attempt} failed for {search_text}: {e}")
             if attempt < retry:
-                time.sleep(2)
+                # Short retry wait
+                time.sleep(5)
+
     print(f"❌ Failed to load page for {search_text} after {retry} attempts.")
     return False
+
 
 def get_current_ist_timestamp():
     # IST = UTC + 5:30
