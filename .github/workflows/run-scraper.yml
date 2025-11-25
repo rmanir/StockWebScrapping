@@ -25,7 +25,7 @@ jobs:
 
       - name: Create service account credentials
         run: |
-          echo "${{ secrets.GCP_CREDENTIALS_B64 }}" > service-account.json
+          echo "${{ secrets.GCP_CREDENTIALS_B64 }}" | base64 -d > service-account.json
 
       - name: Run scraper
         env:
