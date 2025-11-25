@@ -34,6 +34,13 @@ jobs:
         run: |
           python scrape_stocks.py
 
+      - name: Upload video recordings
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-videos
+          path: videos/
+
       - name: Notify via Telegram
         if: always()
         run: |
