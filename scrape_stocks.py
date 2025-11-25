@@ -206,7 +206,7 @@ def scrape_with_retry(page, search_text, retry=3):
             page.keyboard.press("Enter")
 
             # Wait for the company title/header to appear (more stable selector)
-            page.wait_for_selector("h1", timeout=30000)
+            page.wait_for_selector('//*[@id="top"]/div[1]/div/h1', timeout=30000)
 
             print(f"✔ Loaded page successfully for {search_text} (Attempt {attempt})")
             return True
