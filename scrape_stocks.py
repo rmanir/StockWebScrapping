@@ -183,7 +183,7 @@ def get_metric_value(page, locator: str):
                 return false;
             }}
             """,
-            timeout=8000
+            timeout=5000
         )
 
         value = loc.inner_text().strip()
