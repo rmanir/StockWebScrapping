@@ -162,14 +162,45 @@ def convert_to_numeric(value: str):
     except Exception:
         return None
 
+# def get_metric_value(page, locator: str):
+#     try:
+#         element = page.locator(f"xpath={locator}")
+#         if element.is_visible():
+#             return element.inner_text().strip()
+#     except Exception:
+#         return None
+#     return None
+
 def get_metric_value(page, locator: str):
     try:
-        element = page.locator(f"xpath={locator}")
-        if element.is_visible():
-            return element.inner_text().strip()
+        loc = page.locator(f"xpath={locator}")
+
+        # Step 1 – Ensure the element is in DOM and visible
+        loc.wait_for(state="visible", timeout=5000)
+
+        # Step 2 – Wait until meaningful text is populated
+        page.wait_for_function(
+            f"""
+            () => {{
+                const el = document.evaluate('{locator}', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (!el) return false;
+                const txt = el.innerText.trim();
+                // valid if numeric (e.g., "902", "1.09", "7.86%")
+                if (/\\d/.test(txt)) return true;
+                // OR accept true blank / dash case (ETF or unavailable)
+                if (txt === '' || txt === '-') return true;
+                return false;
+            }}
+            """,
+            timeout=8000
+        )
+
+        value = loc.inner_text().strip()
+        return value if value else "N/A"
+
     except Exception:
-        return None
-    return None
+        return "N/A"
+
 
 # def scrape_with_retry(page, search_text: str, retry: int = 3):
 #     for attempt in range(1, retry + 1):
@@ -266,6 +297,11 @@ def main():
                 print(f"\n🔎 Processing symbol: {symbol}")
 
                 if scrape_with_retry(page, symbol):
+                    
+                    # 📌 NEW GLOBAL WAIT HERE
+                    print("🕘 Waiting 1.5 sec for metric data to fully load...")
+                    time.sleep(1.5)
+                    
                     for metric, locator in metric_locators.items():
                         raw_value = get_metric_value(page, locator)
                         numeric_value = convert_to_numeric(raw_value)
