@@ -17,7 +17,7 @@ SPREADSHEET_NAME = "PortfolioTrackerComet"   # Google Sheet file name
 BASE_SHEET_NAME = "Sheet1"                   # Base tab with Stock Name / Symbol / Quantity
 CREDENTIALS_FILE = "service-account.json"    # Will be created from GitHub secret in CI
 COOKIES_FILE = "cookies.json"                # Used locally only (ignored across runs)
-DELAY_BETWEEN_STOCKS = 10                    # seconds between each stock to avoid blocking
+DELAY_BETWEEN_STOCKS = 5                    # seconds between each stock to avoid blocking
 
 # Metric locators from Screener.in "top-ratios" section
 metric_locators = {
@@ -162,15 +162,6 @@ def convert_to_numeric(value: str):
     except Exception:
         return None
 
-# def get_metric_value(page, locator: str):
-#     try:
-#         element = page.locator(f"xpath={locator}")
-#         if element.is_visible():
-#             return element.inner_text().strip()
-#     except Exception:
-#         return None
-#     return None
-
 def get_metric_value(page, locator: str):
     try:
         loc = page.locator(f"xpath={locator}")
@@ -200,23 +191,6 @@ def get_metric_value(page, locator: str):
 
     except Exception:
         return "N/A"
-
-
-# def scrape_with_retry(page, search_text: str, retry: int = 3):
-#     for attempt in range(1, retry + 1):
-#         try:
-#             page.goto("https://www.screener.in/", timeout=60000)
-#             page.fill('#desktop-search input', search_text)
-#             page.keyboard.press("Enter")
-#             page.wait_for_selector('//*[@id="top"]/div[1]/div/h1', timeout=60000)
-#             print(f"✔ Loaded page for {search_text} (Attempt {attempt})")
-#             return True
-#         except Exception as e:
-#             print(f"⚠ Attempt {attempt} failed for {search_text}: {e}")
-#             if attempt < retry:
-#                 time.sleep(2)
-#     print(f"❌ Failed to load page for {search_text} after {retry} attempts.")
-#     return False
 
 def scrape_with_retry(page, search_text, retry=3):
     for attempt in range(1, retry + 1):
